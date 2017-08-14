@@ -190,6 +190,20 @@ func anyErr(v ...interface{}) bool {
 	return false
 }
 
+type Warn interface {
+	Warn() string
+}
+
+func anyWarn(v ...interface{}) bool {
+	for _, av := range v {
+		_, ok := av.(Warn)
+		if ok {
+			return true
+		}
+	}
+	return false
+}
+
 func (sl *StdLogget) Printf(format string, vset ...interface{}) {
 	buf := getBuffer()
 	defer putBuffer(buf)
@@ -206,9 +220,12 @@ func (sl *StdLogget) Printf(format string, vset ...interface{}) {
 	w := bufio.NewWriter(buf)
 	defer w.Flush()
 
-	if anyErr(vset...) {
+	switch {
+	case anyErr(vset...):
 		color.New(color.FgHiRed).Fprintf(w, "[error]")
-	} else {
+	case anyWarn(vset...):
+		color.New(color.FgHiYellow).Fprintf(w, "[warn ]")
+	default:
 		color.New(color.FgHiBlue).Fprintf(w, "[info ]")
 	}
 

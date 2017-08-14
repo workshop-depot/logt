@@ -29,6 +29,10 @@ func TestHere(t *testing.T) {
 	assert.Equal(t, "TestHere", funcName)
 }
 
+type warn []interface{}
+
+func (w warn) Warn() string { return fmt.Sprintf("%v", w) }
+
 func TestSmoke01(t *testing.T) {
 	t.SkipNow()
 	// write a mock Output for this test (and other tests)
@@ -38,6 +42,9 @@ func TestSmoke01(t *testing.T) {
 	lg.Println("there are some errors here ", 14, errors.New("BOOM"))
 	lg.Printf("%v %v\n", 10, errors.New("BOOM"))
 	lg.Printf("%v %v\n", 10, "BOOM")
+	var w warn
+	w = append(w, "WARN")
+	lg.Println(w, "BOOM")
 }
 
 func TestSmoke02(t *testing.T) {
